@@ -24,6 +24,7 @@ public:
     // 지출을 추가하는 함수
     void addExpense(const string& date, int amount, const string& description) {
         transactions.push_back({"지출", description, amount, date}); // 벡터에 지출 기록 추가
+        expenses += amount; // 지출 금액 추가
         cout << "지출 기록: " << date << " - " << description << " - " << amount << "원" << endl;
     }
 
@@ -42,8 +43,21 @@ public:
         }
     }
 
+    // 예산 설정 함수
+    void setBudget(int amount) {
+        budget = amount; // 예산 설정
+        cout << "예산이 " << budget << "원으로 설정되었습니다." << endl;
+    }
+
+    // 남은 잔액을 계산하는 함수
+    int getRemainingBalance() const {
+        return budget - expenses; // 남은 잔액 계산
+    }
+
 private:
     vector<Transaction> transactions; // 해당 월의 거래 내역을 저장하는 벡터
+    int budget = 0; // 예산 초기화
+    int expenses = 0; // 지출 초기화
 };
 
 // 연간 거래를 관리하는 클래스
@@ -78,14 +92,22 @@ private:
         int choice;
         while (true) {
             cout << "--- " << month << "월 기록 관리 ---" << endl;
-            cout << "1. 수입 추가" << endl;
-            cout << "2. 지출 추가" << endl;
-            cout << "3. 거래 내역 보기" << endl;
-            cout << "4. 돌아가기" << endl;
+            cout << "남은 예산: " << budgetmanagers[month - 1].getRemainingBalance() << "원" << endl; // 남은 예산 출력
+            cout << "1. 예산 설정" << endl; // 예산 설정 옵션 추가
+            cout << "2. 수입 추가" << endl;
+            cout << "3. 지출 추가" << endl;
+            cout << "4. 거래 내역 보기" << endl;
+            cout << "5. 돌아가기" << endl;
             cout << "선택: ";
             cin >> choice;
 
-            if (choice == 1) { // 수입 추가
+            if (choice == 1) { // 예산 설정
+                int amount;
+                cout << "예산 금액을 입력하세요: ";
+                cin >> amount;
+                budgetmanagers[month - 1].setBudget(amount); // 선택한 월의 예산 설정
+
+            } else if (choice == 2) { // 수입 추가
                 int amount;
                 string description, date;
                 cout << "수입 금액을 입력하세요: ";
@@ -97,7 +119,7 @@ private:
                 getline(cin, date);
                 budgetmanagers[month - 1].addIncome(date, amount, description); // 선택한 월의 수입 추가
 
-            } else if (choice == 2) { // 지출 추가
+            } else if (choice == 3) { // 지출 추가
                 int amount;
                 string description, date;
                 cout << "지출 금액을 입력하세요: ";
@@ -109,10 +131,10 @@ private:
                 getline(cin, date);
                 budgetmanagers[month - 1].addExpense(date, amount, description); // 선택한 월의 지출 추가
 
-            } else if (choice == 3) { // 거래 내역 보기
+            } else if (choice == 4) { // 거래 내역 보기
                 budgetmanagers[month - 1].showTransactions(); // 선택한 월의 거래 내역 출력
 
-            } else if (choice == 4) { // 이전 메뉴로 돌아가기
+            } else if (choice == 5) { // 이전 메뉴로 돌아가기
                 cout << "이전 메뉴로 돌아갑니다." << endl;
                 break;
 
