@@ -54,8 +54,35 @@ public:
         return budget - expenses; // 남은 잔액 계산
     }
 
+    // 고정 지출을 설정하는 함수
+    void setFixedExpense(int amount, const string& description) {
+        // 고정 지출을 Transaction으로 추가
+        fixedExpenses.push_back({"고정지출", description, amount, "고정지출"}); // 고정 지출 추가
+        cout << "고정 지출이 추가되었습니다: " << description << " - " << amount << "원" << endl;
+    }
+
+    // 매월 고정 지출을 적용하는 함수
+    void applyFixedExpenses() {
+        for (const auto& expense : fixedExpenses) {
+            addExpense("고정지출", expense.amount, expense.description); // 고정 지출 추가
+        }
+    }
+
+    // 고정 지출 목록을 출력하는 함수
+    void showFixedExpenses() const {
+        if (fixedExpenses.empty()) {
+            cout << "고정 지출이 없습니다." << endl;
+            return;
+        }
+        cout << "\n[고정 지출 목록]" << endl;
+        for (size_t i = 0; i < fixedExpenses.size(); ++i) {
+            cout << i << ": " << fixedExpenses[i].description << " - " << fixedExpenses[i].amount << "원" << endl;
+        }
+    }
+
 private:
     vector<Transaction> transactions; // 해당 월의 거래 내역을 저장하는 벡터
+    vector<Transaction> fixedExpenses; // 고정 지출 목록
     int budget = 0; // 예산 초기화
     int expenses = 0; // 지출 초기화
 };
@@ -65,6 +92,47 @@ class YearBudgetManager {
 public:
     // 월별 거래 관리를 시작하는 함수
     void manageMonthlyBudget() {
+        while (true) {
+            cout << "--- 고정 지출 관리 ---" << endl;
+            cout << "1. 고정 지출 추가" << endl;
+            cout << "2. 관리할 달 선택하기" << endl;
+            cout << "0. 종료" << endl;
+            cout << "선택: ";
+            int choice;
+            cin >> choice;
+
+            if (choice == 0) {
+                cout << "프로그램을 종료합니다." << endl;
+                break;
+            } else if (choice == 1) {
+                addFixedExpense();
+            } else if (choice == 2) {
+                selectMonth();
+            } else {
+                cout << "잘못된 입력입니다. 다시 선택해 주세요." << endl;
+            }
+        }
+    }
+
+private:
+    BudgetManager budgetmanagers[12]; // 12개월 데이터를 관리하는 배열
+
+    // 고정 지출 추가하는 함수
+    void addFixedExpense() {
+        int amount;
+        string description;
+        cout << "고정 지출 금액을 입력하세요: ";
+        cin >> amount;
+        cin.ignore(); // 개행 문자 제거
+        cout << "고정 지출 항목을 입력하세요: ";
+        getline(cin, description);
+        for (int month = 0; month < 12; ++month) {
+            budgetmanagers[month].setFixedExpense(amount, description); // 모든 월에 고정 지출 추가
+        }
+    }
+
+    // 관리할 달 선택하는 함수
+    void selectMonth() {
         int month;
         while (true) {
             cout << "--- 월간 기록 프로그램 ---" << endl;
@@ -81,14 +149,15 @@ public:
 
             // 선택한 월의 거래 관리 시작
             manageBudgetForMonth(month);
+            break; // 월 선택 후 루프 종료
         }
     }
 
-private:
-    BudgetManager budgetmanagers[12]; // 12개월 데이터를 관리하는 배열
-
     // 특정 월의 거래를 관리하는 함수
     void manageBudgetForMonth(int month) {
+        // 고정 지출 적용
+        budgetmanagers[month - 1].applyFixedExpenses(); // 선택한 월의 고정 지출 적용
+
         int choice;
         while (true) {
             cout << "--- " << month << "월 기록 관리 ---" << endl;
