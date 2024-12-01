@@ -80,6 +80,16 @@ public:
         }
     }
 
+    // 고정 지출을 삭제하는 함수
+    void removeFixedExpense(int index) {
+        if (index < 0 || index >= fixedExpenses.size()) {
+            cout << "잘못된 번호입니다." << endl;
+            return;
+        }
+        fixedExpenses.erase(fixedExpenses.begin() + index); // 고정 지출 삭제
+        cout << "고정 지출이 삭제되었습니다." << endl;
+    }
+
 private:
     vector<Transaction> transactions; // 해당 월의 거래 내역을 저장하는 벡터
     vector<Transaction> fixedExpenses; // 고정 지출 목록
@@ -95,7 +105,8 @@ public:
         while (true) {
             cout << "--- 고정 지출 관리 ---" << endl;
             cout << "1. 고정 지출 추가" << endl;
-            cout << "2. 관리할 달 선택하기" << endl;
+            cout << "2. 고정 지출 삭제" << endl; // 삭제 옵션 추가
+            cout << "3. 관리할 달 선택하기" << endl;
             cout << "0. 종료" << endl;
             cout << "선택: ";
             int choice;
@@ -107,6 +118,8 @@ public:
             } else if (choice == 1) {
                 addFixedExpense();
             } else if (choice == 2) {
+                deleteFixedExpense(); // 삭제 함수 호출
+            } else if (choice == 3) {
                 selectMonth();
             } else {
                 cout << "잘못된 입력입니다. 다시 선택해 주세요." << endl;
@@ -128,6 +141,17 @@ private:
         getline(cin, description);
         for (int month = 0; month < 12; ++month) {
             budgetmanagers[month].setFixedExpense(amount, description); // 모든 월에 고정 지출 추가
+        }
+    }
+
+    // 고정 지출 삭제하는 함수
+    void deleteFixedExpense() {
+        showFixedExpenses(); // 현재 고정 지출 목록 출력
+        int index;
+        cout << "삭제할 고정 지출의 번호를 입력하세요: ";
+        cin >> index;
+        for (int month = 0; month < 12; ++month) {
+            budgetmanagers[month].removeFixedExpense(index); // 모든 월에서 고정 지출 삭제
         }
     }
 
@@ -210,6 +234,14 @@ private:
             } else { // 잘못된 입력
                 cout << "잘못된 입력입니다. 다시 선택해 주세요." << endl;
             }
+        }
+    }
+
+    // 고정 지출 목록을 출력하는 함수
+    void showFixedExpenses() const {
+        for (int month = 0; month < 12; ++month) {
+            cout << "\n[" << (month + 1) << "월 고정 지출 목록]" << endl;
+            budgetmanagers[month].showFixedExpenses(); // 각 월의 고정 지출 목록 출력
         }
     }
 };
