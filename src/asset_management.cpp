@@ -58,7 +58,7 @@ public:
     void setFixedExpense(int amount, const string& description) {
         // 고정 지출을 Transaction으로 추가
         fixedExpenses.push_back({"고정지출", description, amount, "고정지출"}); // 고정 지출 추가
-        cout << "고정 지출이 추가되었습니다: " << description << " - " << amount << "원" << endl;
+        
     }
 
     // 매월 고정 지출을 적용하는 함수
@@ -87,7 +87,11 @@ public:
             return;
         }
         fixedExpenses.erase(fixedExpenses.begin() + index); // 고정 지출 삭제
-        cout << "고정 지출이 삭제되었습니다." << endl;
+        
+    }
+
+    int getBudget() const{
+        return budget;
     }
 
 private:
@@ -142,6 +146,7 @@ private:
         for (int month = 0; month < 12; ++month) {
             budgetmanagers[month].setFixedExpense(amount, description); // 모든 월에 고정 지출 추가
         }
+        cout << "고정 지출이 추가되었습니다: " << description << " - " << amount << "원" << endl;
     }
 
     // 고정 지출 삭제하는 함수
@@ -153,6 +158,7 @@ private:
         for (int month = 0; month < 12; ++month) {
             budgetmanagers[month].removeFixedExpense(index); // 모든 월에서 고정 지출 삭제
         }
+        cout << "고정 지출이 삭제되었습니다." << endl;
     }
 
     // 관리할 달 선택하는 함수
@@ -184,8 +190,9 @@ private:
 
         int choice;
         while (true) {
+            
             cout << "--- " << month << "월 기록 관리 ---" << endl;
-            cout << "남은 예산: " << budgetmanagers[month - 1].getRemainingBalance() << "원" << endl; // 남은 예산 출력
+            /*cout << "남은 예산: " << budgetmanagers[month - 1].getRemainingBalance() << "원" << endl;*/
             cout << "1. 예산 설정" << endl; // 예산 설정 옵션 추가
             cout << "2. 수입 추가" << endl;
             cout << "3. 지출 추가" << endl;
@@ -199,6 +206,11 @@ private:
                 cout << "예산 금액을 입력하세요: ";
                 cin >> amount;
                 budgetmanagers[month - 1].setBudget(amount); // 선택한 월의 예산 설정
+                
+                int remainingBalance = budgetmanagers[month - 1].getRemainingBalance();
+                int budget = budgetmanagers[month - 1].getBudget();
+                double usedPercentage = (budget - remainingBalance) * 100 / budget;
+                cout << "남은 예산: " << remainingBalance << "원(" << usedPercentage << "% 사용됨)" << endl; // 남은 예산 출력
 
             } else if (choice == 2) { // 수입 추가
                 int amount;
@@ -223,6 +235,11 @@ private:
                 cout << "지출 날짜를 입력하세요 (예: 2024-11-16): ";
                 getline(cin, date);
                 budgetmanagers[month - 1].addExpense(date, amount, description); // 선택한 월의 지출 추가
+
+                int remainingBalance = budgetmanagers[month - 1].getRemainingBalance();
+                int budget = budgetmanagers[month - 1].getBudget();
+                double usedPercentage = (budget - remainingBalance) * 100 / budget;
+                cout << "남은 예산: " << remainingBalance << "원(" << usedPercentage << "% 사용됨)" << endl; // 남은 예산 출력
 
             } else if (choice == 4) { // 거래 내역 보기
                 budgetmanagers[month - 1].showTransactions(); // 선택한 월의 거래 내역 출력
