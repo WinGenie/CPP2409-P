@@ -190,9 +190,24 @@ private:
 
         int choice;
         while (true) {
-            
             cout << "--- " << month << "월 기록 관리 ---" << endl;
-            /*cout << "남은 예산: " << budgetmanagers[month - 1].getRemainingBalance() << "원" << endl;*/
+            cout << "남은 예산: " << budgetmanagers[month - 1].getRemainingBalance() << "원" << endl;
+
+            // 예산 사용 비율에 따른 경고 문구 출력
+            int remainingBalance = budgetmanagers[month - 1].getRemainingBalance();
+            int budget = budgetmanagers[month - 1].getBudget();
+            double usedPercentage = (budget - remainingBalance) * 100.0 / budget;
+
+            if (usedPercentage >= 100) {
+                cout << "경고: 예산이 초과되었습니다! 소비 내역 검토가 필요합니다." << endl;
+            } else if (usedPercentage >= 75) {
+                cout << "경고: 예산의 75%가 사용되었습니다. 계획있는 소비를 실천하세요." << endl;
+            } else if (usedPercentage >= 50) {
+                cout << "주의: 예산의 50%가 사용되었습니다. 일일 소비량을 줄여보세요." << endl;
+            } else if (usedPercentage >= 25) {
+                cout << "알림: 예산의 25%가 사용되었습니다. 소비 패턴을 검토해보세요." << endl;
+            }
+
             cout << "1. 예산 설정" << endl; // 예산 설정 옵션 추가
             cout << "2. 수입 추가" << endl;
             cout << "3. 지출 추가" << endl;
