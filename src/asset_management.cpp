@@ -62,9 +62,9 @@ public:
     }
 
     // 매월 고정 지출을 적용하는 함수
-    void applyFixedExpenses() {
+    void applyFixedExpenses(const vector<Transaction>& fixedExpenses) {
         for (const auto& expense : fixedExpenses) {
-            addExpense("고정지출", expense.amount, expense.description); // 고정 지출 추가
+            addExpense("고정지출", expense.amount, expense.description);
         }
     }
 
@@ -133,6 +133,7 @@ public:
 
 private:
     BudgetManager budgetmanagers[12]; // 12개월 데이터를 관리하는 배열
+    vector<Transaction> fixedExpenses; // 공통 고정 지출 목록
 
     // 고정 지출 추가하는 함수
     void addFixedExpense() {
@@ -143,9 +144,14 @@ private:
         cin.ignore(); // 개행 문자 제거
         cout << "고정 지출 항목을 입력하세요: ";
         getline(cin, description);
+        
+        // 모든 월에 고정 지출 추가
         for (int month = 0; month < 12; ++month) {
             budgetmanagers[month].setFixedExpense(amount, description); // 모든 월에 고정 지출 추가
         }
+        
+        // 고정 지출 목록에 추가
+        fixedExpenses.push_back({"고정지출", description, amount, "고정지출"}); // 고정 지출 목록에 추가
         cout << "고정 지출이 추가되었습니다: " << description << " - " << amount << "원" << endl;
     }
 
@@ -186,7 +192,7 @@ private:
     // 특정 월의 거래를 관리하는 함수
     void manageBudgetForMonth(int month) {
         // 고정 지출 적용
-        budgetmanagers[month - 1].applyFixedExpenses(); // 선택한 월의 고정 지출 적용
+        budgetmanagers[month - 1].applyFixedExpenses(fixedExpenses); // 선택한 월의 고정 지출 적용
 
         int choice;
         while (true) {
@@ -201,11 +207,11 @@ private:
             if (usedPercentage >= 100) {
                 cout << "경고: 예산이 초과되었습니다! 소비 내역 검토가 필요합니다." << endl;
             } else if (usedPercentage >= 75) {
-                cout << "경고: 예산의 75%가 사용되었습니다. 계획있는 소비를 실천하세요." << endl;
+                cout << "경고: 예산의 75%이상 사용되었습니다. 계획있는 소비를 실천하세요." << endl;
             } else if (usedPercentage >= 50) {
-                cout << "주의: 예산의 50%가 사용되었습니다. 일일 소비량을 줄여보세요." << endl;
+                cout << "주의: 예산의 50%이상 사용되었습니다. 일일 소비량을 줄여보세요." << endl;
             } else if (usedPercentage >= 25) {
-                cout << "알림: 예산의 25%가 사용되었습니다. 소비 패턴을 검토해보세요." << endl;
+                cout << "알림: 예산의 25%이상 사용되었습니다. 소비 패턴을 검토해보세요." << endl;
             }
 
             cout << "1. 예산 설정" << endl; // 예산 설정 옵션 추가
@@ -271,9 +277,13 @@ private:
 
     // 고정 지출 목록을 출력하는 함수
     void showFixedExpenses() const {
-        for (int month = 0; month < 12; ++month) {
-            cout << "\n[" << (month + 1) << "월 고정 지출 목록]" << endl;
-            budgetmanagers[month].showFixedExpenses(); // 각 월의 고정 지출 목록 출력
+        if (fixedExpenses.empty()) {
+            cout << "고정 지출이 없습니다." << endl;
+            return;
+        }
+        cout << "\n[고정 지출 목록]" << endl;
+        for (size_t i = 0; i < fixedExpenses.size(); ++i) {
+            cout << i << ": " << fixedExpenses[i].description << " - " << fixedExpenses[i].amount << "원" << endl;
         }
     }
 };
